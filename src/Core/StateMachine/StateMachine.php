@@ -24,17 +24,28 @@ class StateMachine implements StateMachineInterface
   public function getName(): string
   {
     return $this->name;
-    }
+  }
 
   public function can(TransactionInterface $transaction, StateInterface $nextState): bool
   {
-    //...
+    foreach ($this->transactions as $transaction) {
+      $toStates = $transaction->getToStates();
+      foreach ($toStates as $toState) {
+        if ($toState === $nextState) {
+          return true;
+        }
+      }
+    }
 
-    return true;
+    return false;
   }
 
   public function apply(TransactionInterface $transaction, StateInterface $nextState): void
   {
-    //...
+    if (!$this->can($transaction, $nextState)) {
+      return;
+    }
+
+    $transaction->commit($nextState);
   }
 }

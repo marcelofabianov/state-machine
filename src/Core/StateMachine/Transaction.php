@@ -5,6 +5,7 @@ namespace App\Core\StateMachine;
 use App\Core\StateMachine\Contract\RuleInterface;
 use App\Core\StateMachine\Contract\StateInterface;
 use App\Core\StateMachine\Contract\ActionInterface;
+use App\Core\StateMachine\Contract\ContextPayloadInterface;
 use App\Core\StateMachine\Contract\TransactionInterface;
 
 class Transaction implements TransactionInterface
@@ -13,13 +14,20 @@ class Transaction implements TransactionInterface
     private readonly string $description,
     private readonly array $rules,
     private readonly StateInterface $fromState,
-    private readonly StateInterface $toState,
+    private readonly array $toStates,
+    private readonly ContextPayloadInterface $context,
     private readonly array $beforeTransactionActions = [],
     private readonly array $afterTransactionActions = [],
   ){
     foreach ($rules as $rule) {
       if (! $rule instanceof RuleInterface) {
         throw new \InvalidArgumentException("Rule must be an instance of ". RuleInterface::class);
+      }
+    }
+
+    foreach ($toStates as $toState) {
+      if (! $toState instanceof StateInterface) {
+        throw new \InvalidArgumentException("To state must be an instance of ". StateInterface::class);
       }
     }
 
@@ -62,7 +70,13 @@ class Transaction implements TransactionInterface
     return $this->fromState;
   }
 
-  public function getToState(): StateInterface {
-    return $this->toState;
+  public function getToStates(): array {
+    return $this->toStates;
+  }
+
+  public function commit(StateInterface $nextState): ContextPayloadInterface
+  {
+    $this->context->setStatus($nextState);
+    return $this->context;
   }
 }

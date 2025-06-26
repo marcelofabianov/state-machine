@@ -10,9 +10,11 @@ interface TransactionInterface
 
   public function getFromState(): StateInterface;
 
-  public function getToState(): StateInterface;
+  public function getToStates(): array;
 
   public function getBeforeTransactionActions(): array;
 
   public function getAfterTransactionActions(): array;
+
+  public function commit(StateInterface $nextState): ContextPayloadInterface;
 }
