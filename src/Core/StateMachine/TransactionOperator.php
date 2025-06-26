@@ -37,6 +37,10 @@ class TransactionOperator implements TransactionOperatorInterface
 
   private function before(TransactionInterface $transaction, EnforcementModeEnum $mode): void
   {
+    if (!empty($transaction->getBeforeTransactionActions())) {
+      return;
+    }
+
     foreach ($transaction->getBeforeTransactionActions() as $action) {
       $action->execute();
     }
@@ -44,6 +48,10 @@ class TransactionOperator implements TransactionOperatorInterface
 
   private function after(TransactionInterface $transaction, EnforcementModeEnum $mode): void
   {
+    if (!empty($transaction->getAfterTransactionActions())) {
+      return;
+    }
+
     foreach ($transaction->getAfterTransactionActions() as $action) {
       $action->execute();
     }
