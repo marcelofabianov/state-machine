@@ -6,5 +6,5 @@ interface RuleInterface
 {
   public function getName(): string;
 
-  public function isSatisfiedBy(): bool;
+  public function isValid(): bool;
 }
